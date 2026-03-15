@@ -12,7 +12,9 @@ class ActivityController extends Controller
      */
     public function index()
     {
-        //
+        $activities = Activity::all();
+
+        return response()->json($activities);
     }
 
     /**
@@ -28,15 +30,28 @@ class ActivityController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|min:3|max:150',
+            'description' => 'required|string',
+        ]);
+
+        $activities = Activity::create($request->all());
+
+        return response()->json($activities, 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Activity $activity)
+    public function show($id)
     {
-        //
+        $activities = Activity::find($id);
+
+        if (!$activities) {
+            return response()->json(['message' => 'Nincs ilyen tevékenység!'], 404);
+        }
+
+        return response()->json($activities);
     }
 
     /**
@@ -50,10 +65,25 @@ class ActivityController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Activity $activity)
+    public function update(Request $request, $id)
     {
-        //
+        $activities = Activity::find($id);
+
+        if (!$activities) {
+            return response()->json(['message' => 'Nincs ilyen tevékenység!'], 404);
+        }
+
+        $request->validate([
+            'name' => 'required|min:3|max:150',
+            'description' => 'required|string',
+        ]);
+
+        $activities->update($request->all());
+
+        return response()->json($activities);
     }
+
+
 
     /**
      * Remove the specified resource from storage.
