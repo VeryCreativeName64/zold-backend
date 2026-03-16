@@ -12,7 +12,9 @@ class PostController extends Controller
      */
     public function index()
     {
-        //
+        $posts = Post::with('activity')->get();
+
+        return response()->json($posts);
     }
 
     /**
@@ -28,15 +30,29 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'tevekenyseg_id' => 'required|integer|exists:activities,tevekenyseg_id',
+            'osztaly_nev' => 'required|string|min:2|max:50',
+            'allapot' => 'required|boolean',
+        ]);
+
+        $post = Post::create($validated);
+
+        return response()->json($post, 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Post $post)
+    public function show($id)
     {
-        //
+        $posts = Post::with('activity')->find($id);
+
+        if (!$posts) {
+            return response()->json(['message' => 'Nincs ilyen tevékenység!'], 404);
+        }
+
+        return response()->json($posts);
     }
 
     /**
